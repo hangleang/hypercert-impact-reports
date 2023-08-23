@@ -1,44 +1,34 @@
-import {
-  HypercertClient,
-  HypercertMetadata,
-  formatHypercertData,
-  TransferRestrictions,
-} from "@hypercerts-org/sdk";
-import { ethers, BigNumberish } from "ethers";
+import { spreadsheet } from "./config";
+import { VV_FORMATTED_SHEET_ID } from "./constants";
+import { mintHypercert } from "./utils";
+import { ImpactStoryFormattedRowData } from "./types";
+import puppeteer from "puppeteer";
 
-// NOTE: you should replace this with your own JSON-RPC provider to the network
-// This should have signing abilities and match the `chainId` passed into HypercertClient
-const operator = ethers.providers.getDefaultProvider("goerli");
+const main = async (opts: { limit?: number; offset?: number }) => {
+  await spreadsheet.loadInfo(); // loads document properties and worksheets
+  console.log(`load-spreadsheet: ${spreadsheet.title}`);
 
-const client = new HypercertClient({
-  chainId: 5, // goerli testnet
-  operator,
-  //   nftStorageToken,
-  //   web3StorageToken,
-});
+  const sheet = spreadsheet.sheetsByIndex[VV_FORMATTED_SHEET_ID];
+  console.log(`using-sheet: ${sheet.title}`);
+  console.log(`total-stories: ${sheet.rowCount}`);
 
-const mintHypercert = async () => {
-  // Validate and format your Hypercert metadata
-  const {
-    data: metadata,
-    valid,
-    errors,
-  } = formatHypercertData({
-    name: "",
-  });
+  const dataset = await sheet.getRows<ImpactStoryFormattedRowData>(opts);
+  console.log(
+    `minting ${opts.limit || 0} impacts, offset by ${opts.offset || 0}`
+  );
 
-  // Check on errors
-  if (!valid || !metadata) {
-    return console.error(errors);
-  }
+  const browser = await puppeteer.launch({ headless: "new" });
+  // Store the endpoint to be able to reconnect to the browser.
+  const browserWSEndpoint = browser.wsEndpoint();
+  // Disconnect puppeteer from the browser.
+  browser.disconnect();
 
-  // Set the total amount of units available
-  const totalUnits: BigNumberish = 10_000_000;
-
-  // Define the transfer restriction
-  const transferRestrictions: TransferRestrictions =
-    TransferRestrictions.FromCreatorOnly;
-
-  // Mint your Hypercert!
-  const tx = await client.mintClaim(metadata, totalUnits, transferRestrictions);
+  await Promise.all(
+    dataset.map(
+      async (impact, idx, _) =>
+        await mintHypercert(impact.toObject(), browserWSEndpoint)
+    )
+  );
 };
+
+main({ limit: 1, offset: 4 });

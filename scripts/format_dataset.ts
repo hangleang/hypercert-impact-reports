@@ -7,10 +7,7 @@ import {
   VV_SHEET_ID,
   VV_WORK_SCOPE,
 } from "../src/constants";
-import {
-  VVImpactStoryFormattedRowData,
-  VVImpactStoryRowData,
-} from "../src/types";
+import { VVImpactStoryRowData } from "../src/types";
 import {
   getFormattedSheetTitle,
   getTimeframe,
@@ -58,7 +55,7 @@ async function main(opts: { limit?: number; offset?: number }) {
       if (youtubeURL) {
         try {
           const response = await fetch(getYoutubeOembedURL(youtubeURL));
-          const youtubeMetadata = await response.json();
+          const youtubeMetadata: any = await response.json();
           // console.log(youtubeMetadata);
           name = youtubeMetadata["title"];
           image = youtubeMetadata["thumbnail_url"];
@@ -78,13 +75,11 @@ async function main(opts: { limit?: number; offset?: number }) {
 
       const listDescription = [
         report.impact_achieved_description,
-        `#### Scope: ${peopleInVillages}`,
+        `Scope: ${peopleInVillages}`,
       ];
-      if (isNotEmpty(details)) listDescription.push(`#### Details: ${details}`);
+      if (isNotEmpty(details)) listDescription.push(`Details: ${details}`);
       if (isNotEmpty(other)) listDescription.push(other);
-      const description = listDescription.join(`
-      
-      `);
+      const description = listDescription.join(`\n\n`);
 
       // hypercert impact dimension fields
       const impactDate = report.impact_date;
@@ -128,4 +123,4 @@ async function main(opts: { limit?: number; offset?: number }) {
   formattedVVSheet.addRows(formattedDataset);
 }
 
-main({ limit: 100, offset: 0 });
+main({ limit: 1000, offset: 0 });

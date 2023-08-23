@@ -1,8 +1,10 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
+import { ethers } from "ethers";
+// import { HypercertClient } from "@hypercerts-org/sdk";
 
-import * as dotenv from "dotenv";
 import { SPREADSHEET_ID } from "./constants";
+import * as dotenv from "dotenv";
 dotenv.config();
 
 // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication
@@ -18,3 +20,36 @@ export const spreadsheet = new GoogleSpreadsheet(
   SPREADSHEET_ID,
   serviceAccountAuth
 );
+
+// NOTE: you should replace this with your own JSON-RPC provider to the network
+// This should have signing abilities and match the `chainId` passed into HypercertClient
+const provider = new ethers.providers.AlchemyProvider(
+  "goerli",
+  process.env.ALCHEMY_API
+);
+
+let operator: any;
+const privateKey = process.env.PRIVATE_KEY;
+if (privateKey) {
+  operator = new ethers.Wallet(privateKey, provider);
+} else {
+  operator = provider;
+}
+
+export const getClient = () =>
+  import("@hypercerts-org/sdk").then(
+    (hypercert) =>
+      new hypercert.HypercertClient({
+        chainId: 5, // goerli testnet
+        operator,
+        nftStorageToken: process.env.NFT_STORAGE_API,
+        web3StorageToken: process.env.WEB3_STORAGE_API,
+      })
+  );
+
+// export const client = new HypercertClient({
+//   chainId: 5,
+//   operator,
+//   nftStorageToken: process.env.NFT_STORAGE_API,
+//   web3StorageToken: process.env.WEB3_STORAGE_API,
+// });

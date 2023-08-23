@@ -1,4 +1,4 @@
-import { HypercertMetadata } from "@hypercerts-org/sdk";
+import type { HypercertMetadata } from "@hypercerts-org/sdk";
 
 type Bool = "Yes" | "No";
 export enum Empty {
@@ -38,7 +38,7 @@ export type VVImpactStoryRowData = {
   impact_website_publish_date?: string;
 };
 
-export interface VVImpactStoryFormattedRowData
+export interface ImpactStoryFormattedRowData
   extends Omit<HypercertMetadata, "hypercert"> {
   uid: string;
   youtube_url?: string;
