@@ -1,5 +1,7 @@
 import { BigNumberish } from "ethers";
 import puppeteer, { ScreenshotClip, Viewport } from "puppeteer";
+import { formatHypercertData, TransferRestrictions } from "@hypercerts-org/sdk";
+import querystring from "node:querystring";
 import {
   HYPERCERT_CREATE_URL,
   INDEFINITE,
@@ -11,9 +13,8 @@ import {
   SCREENSHOT_CLIP,
 } from "./constants";
 import { Empty, ImpactStoryFormattedRowData } from "./types";
-import querystring from "node:querystring";
-import { formatHypercertData, transferRestrictions } from "./hypercert";
-import { getClient } from "./config";
+// import { formatHypercertData, transferRestrictions } from "./hypercert";
+import { client, getClient } from "./config";
 
 export const getFormattedSheetTitle = (currentTitle: string) => {
   if (currentTitle.includes(SUFFIX_FORMATTED_TITLE)) return currentTitle;
@@ -146,11 +147,12 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
   const [impactTimeStart, impactTimeEnd] = impact_timeframe!
     .split(UNTIL_SYMBOL)
     .map(dateToTimestamp);
+
   const {
     data: metadata,
     valid,
     errors,
-  } = await formatHypercertData({
+  } = formatHypercertData({
     ...rest,
     name: name!,
     description: description!,
@@ -169,6 +171,7 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
     excludedWorkScope: [],
     excludedRights: [],
   });
+  console.log(`metadata: ${metadata}`);
 
   // Check on errors
   if (!valid || !metadata) {
@@ -182,14 +185,10 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
   const totalUnits: BigNumberish = 1_000;
 
   // Define the transfer restriction
-  // const transferRestrictions: TransferRestrictions =
-  //   TransferRestrictions.FromCreatorOnly;
+  const restriction = TransferRestrictions.FromCreatorOnly;
 
   // Mint your Hypercert!
   // const client = await getClient();
-  // const tx = await client.mintClaim(metadata, totalUnits, 2);
-  return getClient().then((client) =>
-    client.mintClaim(metadata, totalUnits, 2)
-  );
-  // return tx;
+  const tx = await client.mintClaim(metadata, totalUnits, restriction);
+  return tx;
 };

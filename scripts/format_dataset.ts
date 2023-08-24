@@ -73,13 +73,13 @@ async function main(opts: { limit?: number; offset?: number }) {
         villages || BLANK_TEXT
       } villages`;
 
-      const listDescription = [
-        report.impact_achieved_description,
+      const listDescription: string[] = [
+        report.impact_achieved_description!,
         `Scope: ${peopleInVillages}`,
       ];
       if (isNotEmpty(details)) listDescription.push(`Details: ${details}`);
-      if (isNotEmpty(other)) listDescription.push(other);
-      const description = listDescription.join(`\n\n`);
+      if (isNotEmpty(other)) listDescription.push(other!);
+      const description = listDescription.map((v) => v.trim()).join(`\n\n`);
 
       // hypercert impact dimension fields
       const impactDate = report.impact_date;
@@ -123,4 +123,4 @@ async function main(opts: { limit?: number; offset?: number }) {
   formattedVVSheet.addRows(formattedDataset);
 }
 
-main({ limit: 1000, offset: 0 });
+main({});

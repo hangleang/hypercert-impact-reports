@@ -1,5 +1,3 @@
-// const hypercert = Promise.resolve();
-
 export const formatHypercertData = (args: any) =>
   import("@hypercerts-org/sdk").then(({ formatHypercertData: fn }) => fn(args));
 
