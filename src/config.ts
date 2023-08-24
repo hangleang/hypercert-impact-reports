@@ -36,12 +36,12 @@ if (privateKey) {
   operator = provider;
 }
 
-export const client = new HypercertClient({
-  chainId: 5,
-  operator,
-  nftStorageToken: process.env.NFT_STORAGE_API,
-  web3StorageToken: process.env.WEB3_STORAGE_API,
-});
+// export const client = new HypercertClient({
+//   chainId: 5,
+//   operator,
+//   nftStorageToken: process.env.NFT_STORAGE_API,
+//   web3StorageToken: process.env.WEB3_STORAGE_API,
+// });
 
 export const getClient = () =>
   import("@hypercerts-org/sdk").then(

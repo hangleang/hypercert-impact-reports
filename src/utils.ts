@@ -1,6 +1,6 @@
 import { BigNumberish } from "ethers";
 import puppeteer, { ScreenshotClip, Viewport } from "puppeteer";
-import { formatHypercertData, TransferRestrictions } from "@hypercerts-org/sdk";
+// import { formatHypercertData, TransferRestrictions } from "@hypercerts-org/sdk";
 import querystring from "node:querystring";
 import {
   HYPERCERT_CREATE_URL,
@@ -13,8 +13,8 @@ import {
   SCREENSHOT_CLIP,
 } from "./constants";
 import { Empty, ImpactStoryFormattedRowData } from "./types";
-// import { formatHypercertData, transferRestrictions } from "./hypercert";
-import { client, getClient } from "./config";
+import { formatHypercertData, transferRestrictions } from "./hypercert";
+import { getClient } from "./config";
 
 export const getFormattedSheetTitle = (currentTitle: string) => {
   if (currentTitle.includes(SUFFIX_FORMATTED_TITLE)) return currentTitle;
@@ -152,7 +152,7 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
     data: metadata,
     valid,
     errors,
-  } = formatHypercertData({
+  } = await formatHypercertData({
     ...rest,
     name: name!,
     description: description!,
@@ -185,10 +185,10 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
   const totalUnits: BigNumberish = 1_000;
 
   // Define the transfer restriction
-  const restriction = TransferRestrictions.FromCreatorOnly;
+  const restriction = (await transferRestrictions()).FromCreatorOnly;
 
   // Mint your Hypercert!
-  // const client = await getClient();
+  const client = await getClient();
   const tx = await client.mintClaim(metadata, totalUnits, restriction);
   return tx;
 };
