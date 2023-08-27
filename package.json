@@ -2,16 +2,18 @@
   "name": "hypercert-test-mint",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "index.js",
-  "type": "module",
+  "main": "./dist/src/index.cjs",
   "dependencies": {
+    "@hypercerts-org/contracts": "^0.0.13",
     "@hypercerts-org/sdk": "^0.3.0",
     "dotenv": "^16.3.1",
     "google-auth-library": "^9.0.0",
     "google-spreadsheet": "^4.0.2",
+    "node-fetch": "^3.3.2",
     "puppeteer": "^21.1.0"
   },
   "scripts": {
+    "build": "tsc",
     "start": "ts-node src/index.ts",
     "scripts": "ts-node"
   },

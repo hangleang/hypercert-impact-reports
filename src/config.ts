@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 
 import { SPREADSHEET_ID } from "./constants";
 import * as dotenv from "dotenv";
-import { HypercertClient } from "@hypercerts-org/sdk";
+// import { HypercertClient } from "@hypercerts-org/sdk";
 dotenv.config();
 
 // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication

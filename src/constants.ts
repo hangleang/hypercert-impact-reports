@@ -1,5 +1,6 @@
 export const SPREADSHEET_ID = "1uTXcOefrEmtOOQwsaqprHJ-WMEi3W6tJP7nE6uPIAQc";
 export const SUFFIX_FORMATTED_TITLE = "-formatted";
+export const SUFFIX_HYPERCERTS_GENERATED_TITLE = "-hypercerts-generated";
 export const BLANK_TEXT = "unknown";
 export const CGNET_SHEET_ID = 1;
 export const VV_SHEET_ID = 2;
@@ -22,6 +23,11 @@ export const HEADERS_TITLE = [
   "rights",
   "properties",
   "hidden_properties",
+];
+export const HYPERCERTS_GENERATED_TITLE = [
+  "uid",
+  "hypercert_creation_url",
+  "hypercert_artwork_base64",
 ];
 export const RIGHTS = "Public Display";
 export const VV_WORK_SCOPE = "Video Volunteers Impact Report";

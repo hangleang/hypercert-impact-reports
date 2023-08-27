@@ -14,6 +14,7 @@ import {
   getYoutubeOembedURL,
   isNotEmpty,
 } from "../src/utils";
+import fetch from "node-fetch";
 
 async function main(opts: { limit?: number; offset?: number }) {
   await spreadsheet.loadInfo(); // loads document properties and worksheets

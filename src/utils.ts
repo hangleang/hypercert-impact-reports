@@ -11,6 +11,7 @@ import {
   VV_LOGO_URL,
   PAGE_VIEWPORT,
   SCREENSHOT_CLIP,
+  SUFFIX_HYPERCERTS_GENERATED_TITLE,
 } from "./constants";
 import { Empty, ImpactStoryFormattedRowData } from "./types";
 import { formatHypercertData, transferRestrictions } from "./hypercert";
@@ -19,6 +20,12 @@ import { getClient } from "./config";
 export const getFormattedSheetTitle = (currentTitle: string) => {
   if (currentTitle.includes(SUFFIX_FORMATTED_TITLE)) return currentTitle;
   return `${currentTitle}${SUFFIX_FORMATTED_TITLE}`;
+};
+
+export const getGeneratedHypercertSheetTitle = (currentTitle: string) => {
+  if (currentTitle.includes(SUFFIX_HYPERCERTS_GENERATED_TITLE))
+    return currentTitle;
+  return `${currentTitle}${SUFFIX_HYPERCERTS_GENERATED_TITLE}`;
 };
 
 export const getYoutubeOembedURL = (youtubeURL: string) =>
@@ -100,8 +107,8 @@ export const takeScreenshotOf = async (
   });
 
   // disconnect/close
-  await page.close();
-  await browser.close();
+  // await page.close();
+  // await browser.close();
   return `data:image/png;base64,${imageEncoding}`;
 };
 
@@ -191,4 +198,27 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
   const client = await getClient();
   const tx = await client.mintClaim(metadata, totalUnits, restriction);
   return tx;
+};
+
+export const generateHypercert = async <T extends ImpactStoryFormattedRowData>(
+  impact: Partial<T>
+  // browserWSEndpoint: string
+) => {
+  // pass query to hypercert create form, then after loaded, take screenshot with base64encoding
+  const hypercertCreateURL = getHypercertCreateURL(impact, VV_LOGO_URL);
+  console.log(`create-url: ${hypercertCreateURL}`);
+  // const imageEncodingURL = await takeScreenshotOf(
+  //   browserWSEndpoint,
+  //   hypercertCreateURL,
+  //   impact.uid!,
+  //   PAGE_VIEWPORT,
+  //   SCREENSHOT_CLIP
+  // );
+  // console.log(`base64imageUrl: ${imageEncodingURL}`);
+
+  return {
+    uid: impact.uid!,
+    hypercert_creation_url: hypercertCreateURL,
+    // hypercert_artwork_base64: imageEncodingURL,
+  };
 };
