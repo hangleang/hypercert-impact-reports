@@ -2,8 +2,10 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import { ethers } from "ethers";
 
-import { SPREADSHEET_ID } from "./constants";
+import { DEPLOYMENTS, SPREADSHEET_ID, SupportedChainIds } from "./constants.js";
 import * as dotenv from "dotenv";
+import { HypercertMinter, HypercertMinterABI } from "@hypercerts-org/contracts";
+import { NFTStorage } from "nft.storage";
 // import { HypercertClient } from "@hypercerts-org/sdk";
 dotenv.config();
 
@@ -23,19 +25,38 @@ export const spreadsheet = new GoogleSpreadsheet(
 
 // NOTE: you should replace this with your own JSON-RPC provider to the network
 // This should have signing abilities and match the `chainId` passed into HypercertClient
-const provider = new ethers.providers.AlchemyProvider(
+export const provider = new ethers.providers.AlchemyProvider(
   "goerli",
   process.env.ALCHEMY_API
 );
 
 const privateKey = process.env.PRIVATE_KEY;
-let operator: ethers.providers.Provider | ethers.Signer;
+export let operator: ethers.providers.Provider | ethers.Signer;
 if (privateKey) {
   operator = new ethers.Wallet(privateKey, provider);
 } else {
   operator = provider;
 }
 
+export const chainId = async () => (await provider.getNetwork()).chainId;
+
+export const hypercertContract = async (): Promise<HypercertMinter> => {
+  const _chainId = await chainId();
+  if (!_chainId || [5, 10].indexOf(_chainId) === -1) {
+    throw new Error(`chainId=${_chainId.toString()} is not yet supported`);
+  }
+
+  return new ethers.Contract(
+    DEPLOYMENTS[_chainId as SupportedChainIds].contractAddress,
+    HypercertMinterABI,
+    operator
+  ) as HypercertMinter;
+};
+
+const nftStorageToken = process.env.NFT_STORAGE_API || "";
+export const nftStorageClient: NFTStorage = new NFTStorage({
+  token: nftStorageToken,
+});
 // export const client = new HypercertClient({
 //   chainId: 5,
 //   operator,
@@ -49,7 +70,7 @@ export const getClient = () =>
       new HypercertClient({
         chainId: 5,
         operator,
-        nftStorageToken: process.env.NFT_STORAGE_API,
+        nftStorageToken,
         web3StorageToken: process.env.WEB3_STORAGE_API,
       })
   );

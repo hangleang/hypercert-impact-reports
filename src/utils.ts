@@ -12,10 +12,11 @@ import {
   PAGE_VIEWPORT,
   SCREENSHOT_CLIP,
   SUFFIX_HYPERCERTS_GENERATED_TITLE,
-} from "./constants";
-import { Empty, ImpactStoryFormattedRowData } from "./types";
-import { formatHypercertData, transferRestrictions } from "./hypercert";
-import { getClient } from "./config";
+} from "./constants.js";
+import { Empty, ImpactStoryFormattedRowData } from "./types.js";
+import { formatHypercertData } from "./hypercert.js";
+import { getClient, hypercertContract } from "./config.js";
+import { storeMetadata } from "./ipfs.js";
 
 export const getFormattedSheetTitle = (currentTitle: string) => {
   if (currentTitle.includes(SUFFIX_FORMATTED_TITLE)) return currentTitle;
@@ -112,7 +113,9 @@ export const takeScreenshotOf = async (
   return `data:image/png;base64,${imageEncoding}`;
 };
 
-export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
+export const getMintHypercertParams = async <
+  T extends ImpactStoryFormattedRowData
+>(
   impact: Partial<T>,
   browserWSEndpoint: string
 ) => {
@@ -159,7 +162,7 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
     data: metadata,
     valid,
     errors,
-  } = await formatHypercertData({
+  } = formatHypercertData({
     ...rest,
     name: name!,
     description: description!,
@@ -182,7 +185,8 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
 
   // Check on errors
   if (!valid || !metadata) {
-    return console.error(errors);
+    console.error(errors);
+    return;
   }
 
   console.log(`Impact Story: ${uid}`);
@@ -192,12 +196,23 @@ export const mintHypercert = async <T extends ImpactStoryFormattedRowData>(
   const totalUnits: BigNumberish = 1_000;
 
   // Define the transfer restriction
-  const restriction = (await transferRestrictions()).FromCreatorOnly;
 
   // Mint your Hypercert!
-  const client = await getClient();
-  const tx = await client.mintClaim(metadata, totalUnits, restriction);
-  return tx;
+  // const client = await getClient();
+  // const tx = await client.mintClaim(metadata, totalUnits, restriction);
+  // const senderAddress = await hypercertContract.signer.getAddress();
+  // const cid = await storeMetadata(metadata);
+  // const tx = await hypercertContract.mintClaim(
+  //   senderAddress,
+  //   totalUnits,
+  //   cid,
+  //   0 // allow all
+  // );
+  return {
+    data: { uid: uid!, ...metadata },
+    totalUnits,
+    transferRestriction: 0,
+  };
 };
 
 export const generateHypercert = async <T extends ImpactStoryFormattedRowData>(

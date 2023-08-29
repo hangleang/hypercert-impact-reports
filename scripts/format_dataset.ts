@@ -1,4 +1,4 @@
-import { spreadsheet } from "../src/config";
+import { spreadsheet } from "../src/config.js";
 import {
   BLANK_TEXT,
   HEADERS_TITLE,
@@ -6,14 +6,14 @@ import {
   VV_LOGO_URL,
   VV_SHEET_ID,
   VV_WORK_SCOPE,
-} from "../src/constants";
-import { VVImpactStoryRowData } from "../src/types";
+} from "../src/constants.js";
+import { VVImpactStoryRowData } from "../src/types.js";
 import {
   getFormattedSheetTitle,
   getTimeframe,
   getYoutubeOembedURL,
   isNotEmpty,
-} from "../src/utils";
+} from "../src/utils.js";
 import fetch from "node-fetch";
 
 async function main(opts: { limit?: number; offset?: number }) {

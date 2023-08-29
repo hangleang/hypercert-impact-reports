@@ -1,14 +1,14 @@
 import puppeteer from "puppeteer";
-import { spreadsheet } from "../src/config";
+import { spreadsheet } from "../src/config.js";
 import {
   HYPERCERTS_GENERATED_TITLE,
   VV_FORMATTED_SHEET_ID,
-} from "../src/constants";
-import { ImpactStoryFormattedRowData } from "../src/types";
+} from "../src/constants.js";
+import { ImpactStoryFormattedRowData } from "../src/types.js";
 import {
   generateHypercert,
   getGeneratedHypercertSheetTitle,
-} from "../src/utils";
+} from "../src/utils.js";
 
 async function main(opts: { limit?: number; offset?: number }) {
   await spreadsheet.loadInfo(); // loads document properties and worksheets
