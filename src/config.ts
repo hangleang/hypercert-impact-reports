@@ -2,9 +2,9 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import { ethers } from "ethers";
 
-import { SPREADSHEET_ID } from "./constants";
+import { SPREADSHEET_ID } from "./constants.js";
 import * as dotenv from "dotenv";
-// import { HypercertClient } from "@hypercerts-org/sdk";
+import { HypercertClient } from "@hypercerts-org/sdk";
 dotenv.config();
 
 // Initialize auth - see https://theoephraim.github.io/node-google-spreadsheet/#/guides/authentication
@@ -36,20 +36,20 @@ if (privateKey) {
   operator = provider;
 }
 
-// export const client = new HypercertClient({
-//   chainId: 5,
-//   operator,
-//   nftStorageToken: process.env.NFT_STORAGE_API,
-//   web3StorageToken: process.env.WEB3_STORAGE_API,
-// });
+export const client = new HypercertClient({
+  chainId: 5,
+  operator,
+  nftStorageToken: process.env.NFT_STORAGE_API,
+  web3StorageToken: process.env.WEB3_STORAGE_API,
+});
 
-export const getClient = () =>
-  import("@hypercerts-org/sdk").then(
-    ({ HypercertClient }) =>
-      new HypercertClient({
-        chainId: 5,
-        operator,
-        nftStorageToken: process.env.NFT_STORAGE_API,
-        web3StorageToken: process.env.WEB3_STORAGE_API,
-      })
-  );
+// export const getClient = () =>
+//   import("@hypercerts-org/sdk").then(
+//     ({ HypercertClient }) =>
+//       new HypercertClient({
+//         chainId: 5,
+//         operator,
+//         nftStorageToken: process.env.NFT_STORAGE_API,
+//         web3StorageToken: process.env.WEB3_STORAGE_API,
+//       })
+//   );

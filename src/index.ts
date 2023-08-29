@@ -1,7 +1,7 @@
-import { spreadsheet } from "./config";
-import { VV_FORMATTED_SHEET_ID } from "./constants";
-import { mintHypercert } from "./utils";
-import { ImpactStoryFormattedRowData } from "./types";
+import { spreadsheet } from "./config.js";
+import { VV_FORMATTED_SHEET_ID } from "./constants.js";
+import { mintHypercert } from "./utils.js";
+import { ImpactStoryFormattedRowData } from "./types.js";
 import puppeteer from "puppeteer";
 
 const main = async (opts: { limit?: number; offset?: number }) => {
@@ -20,8 +20,6 @@ const main = async (opts: { limit?: number; offset?: number }) => {
   const browser = await puppeteer.launch({ headless: "new" });
   // Store the endpoint to be able to reconnect to the browser.
   const browserWSEndpoint = browser.wsEndpoint();
-  // Disconnect puppeteer from the browser.
-  browser.disconnect();
 
   await Promise.all(
     dataset.map(
@@ -29,6 +27,9 @@ const main = async (opts: { limit?: number; offset?: number }) => {
         await mintHypercert(impact.toObject(), browserWSEndpoint)
     )
   );
+
+  // Disconnect puppeteer from the browser.
+  browser.disconnect();
 };
 
 main({ limit: 1, offset: 10 });

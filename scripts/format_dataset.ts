@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { spreadsheet } from "../src/config";
 import {
   BLANK_TEXT,
@@ -14,7 +15,6 @@ import {
   getYoutubeOembedURL,
   isNotEmpty,
 } from "../src/utils";
-import fetch from "node-fetch";
 
 async function main(opts: { limit?: number; offset?: number }) {
   await spreadsheet.loadInfo(); // loads document properties and worksheets
