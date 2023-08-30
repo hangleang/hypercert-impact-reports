@@ -1,10 +1,5 @@
-// export const formatHypercertData = (args: any) =>
-//   import("@hypercerts-org/sdk").then(({ formatHypercertData: fn }) => fn(args));
+import { HypercertMetadata, HypercertClaimdata } from "./types.js";
 
-import { HypercertClaimdata, HypercertMetadata } from "@hypercerts-org/sdk";
-
-// export const transferRestrictions = () =>
-//   import("@hypercerts-org/sdk").then(({ TransferRestrictions: type }) => type);
 export const INDEFINITE_DATE_STRING = "indefinite";
 const formatUnixTime = (seconds: number) => {
   if (seconds == 0) {
@@ -22,7 +17,7 @@ const formatDate = (date: Date) => {
 };
 
 type FormatResult = {
-  data: HypercertMetadata | null;
+  data: any | null;
   valid: boolean;
   errors: Record<string, string> | null;
 };

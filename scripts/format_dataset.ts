@@ -57,7 +57,6 @@ async function main(opts: { limit?: number; offset?: number }) {
         try {
           const response = await fetch(getYoutubeOembedURL(youtubeURL));
           const youtubeMetadata: any = await response.json();
-          // console.log(youtubeMetadata);
           name = youtubeMetadata["title"];
           image = youtubeMetadata["thumbnail_url"];
         } catch (error) {

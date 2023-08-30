@@ -1,3 +1,5 @@
+import { Deployment, SupportedChainIds } from "./types.js";
+
 export const SPREADSHEET_ID = "1uTXcOefrEmtOOQwsaqprHJ-WMEi3W6tJP7nE6uPIAQc";
 export const SUFFIX_FORMATTED_TITLE = "-formatted";
 export const SUFFIX_HYPERCERTS_GENERATED_TITLE = "-hypercerts-generated";
@@ -35,7 +37,8 @@ export const CGNET_WORK_SCOPE = "CGNet Swara Impact Report";
 export const UNTIL_SYMBOL = "→";
 export const INDEFINITE = "indefinite";
 export const VERSION = "0.1.0";
-export const HYPERCERT_CREATE_URL = "https://hypercerts.org/app/create/#";
+export const HYPERCERT_CREATE_URL =
+  "https://testnet.hypercerts.org/app/create/#";
 
 export const PAGE_VIEWPORT = {
   width: 1680,
@@ -54,18 +57,6 @@ const DEFAULT_CHAIN_ID = 5;
 
 const DEFAULT_GRAPH_BASE_URL =
   "https://api.thegraph.com/subgraphs/name/hypercerts-admin";
-
-export type SupportedChainIds = 5 | 10;
-export type Deployment = {
-  /** The ID of the network on which the contract is deployed. */
-  chainId: number;
-  /** The name of the network on which the contract is deployed. */
-  chainName: string;
-  /** The address of the deployed contract. */
-  contractAddress: string;
-  /** The url to the subgraph that indexes the contract events. Override for localized testing */
-  graphUrl: string;
-};
 
 // These are the deployments we manage
 export const DEPLOYMENTS: { [key in SupportedChainIds]: Deployment } = {

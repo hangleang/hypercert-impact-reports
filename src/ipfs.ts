@@ -1,11 +1,12 @@
-import { HypercertMetadata } from "@hypercerts-org/sdk";
+import type { HypercertMetadata } from "./types.js";
 import { CIDString } from "nft.storage";
 import { nftStorageClient } from "./config.js";
+import { File } from "nft.storage";
 
 export const storeMetadata = async (
   list: (HypercertMetadata & { uid: string })[]
 ): Promise<CIDString> => {
-  // new Blob([JSON.stringify(data)], { type: "application/json" })
+  // new Blob([JSON.stringify(data)], { type: "application/json" });
   const files = list.map((data) => {
     const { uid, ...metadata } = data;
     return new File([JSON.stringify(metadata)], uid, {

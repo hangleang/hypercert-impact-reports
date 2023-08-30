@@ -1,11 +1,12 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
-import { ethers } from "ethers";
+import { ethers, Contract } from "ethers";
 
-import { DEPLOYMENTS, SPREADSHEET_ID, SupportedChainIds } from "./constants.js";
+import { DEPLOYMENTS, SPREADSHEET_ID } from "./constants.js";
 import * as dotenv from "dotenv";
-import { HypercertMinter, HypercertMinterABI } from "@hypercerts-org/contracts";
 import { NFTStorage } from "nft.storage";
+import HypercertMinterABI from "../abi/HypercertMinter.json" assert { type: "json" };
+import { SupportedChainIds } from "./types.js";
 // import { HypercertClient } from "@hypercerts-org/sdk";
 dotenv.config();
 
@@ -25,52 +26,39 @@ export const spreadsheet = new GoogleSpreadsheet(
 
 // NOTE: you should replace this with your own JSON-RPC provider to the network
 // This should have signing abilities and match the `chainId` passed into HypercertClient
-export const provider = new ethers.providers.AlchemyProvider(
-  "goerli",
-  process.env.ALCHEMY_API
-);
+export const rpcURL = process.env.RPC_URL || "";
+export const provider = new ethers.providers.JsonRpcBatchProvider(rpcURL);
 
-const privateKey = process.env.PRIVATE_KEY;
+const privateKey = process.env.PRIVATE_KEY || "";
+export const signer = new ethers.Wallet(privateKey, provider);
 export let operator: ethers.providers.Provider | ethers.Signer;
 if (privateKey) {
-  operator = new ethers.Wallet(privateKey, provider);
+  operator = signer;
 } else {
   operator = provider;
 }
 
-export const chainId = async () => (await provider.getNetwork()).chainId;
+export const chainId = (await provider.getNetwork()).chainId;
 
-export const hypercertContract = async (): Promise<HypercertMinter> => {
-  const _chainId = await chainId();
-  if (!_chainId || [5, 10].indexOf(_chainId) === -1) {
-    throw new Error(`chainId=${_chainId.toString()} is not yet supported`);
-  }
+if ([5, 10].indexOf(chainId) === -1) {
+  throw new Error(`chainId=${chainId.toString()} is not yet supported`);
+}
+export const IHypercertMinter = new ethers.utils.Interface(HypercertMinterABI);
 
-  return new ethers.Contract(
-    DEPLOYMENTS[_chainId as SupportedChainIds].contractAddress,
-    HypercertMinterABI,
-    operator
-  ) as HypercertMinter;
-};
+export const hypercertContract = new ethers.Contract(
+  DEPLOYMENTS[chainId as SupportedChainIds].contractAddress,
+  HypercertMinterABI,
+  operator
+);
 
 const nftStorageToken = process.env.NFT_STORAGE_API || "";
 export const nftStorageClient: NFTStorage = new NFTStorage({
   token: nftStorageToken,
 });
+
 // export const client = new HypercertClient({
 //   chainId: 5,
 //   operator,
 //   nftStorageToken: process.env.NFT_STORAGE_API,
 //   web3StorageToken: process.env.WEB3_STORAGE_API,
 // });
-
-export const getClient = () =>
-  import("@hypercerts-org/sdk").then(
-    ({ HypercertClient }) =>
-      new HypercertClient({
-        chainId: 5,
-        operator,
-        nftStorageToken,
-        web3StorageToken: process.env.WEB3_STORAGE_API,
-      })
-  );

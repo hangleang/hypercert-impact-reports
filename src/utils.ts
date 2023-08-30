@@ -15,7 +15,7 @@ import {
 } from "./constants.js";
 import { Empty, ImpactStoryFormattedRowData } from "./types.js";
 import { formatHypercertData } from "./hypercert.js";
-import { getClient, hypercertContract } from "./config.js";
+import { hypercertContract } from "./config.js";
 import { storeMetadata } from "./ipfs.js";
 
 export const getFormattedSheetTitle = (currentTitle: string) => {
@@ -94,8 +94,11 @@ export const takeScreenshotOf = async (
   const page = await browser.newPage();
   await page.setViewport(viewport);
 
+  // Configure the navigation timeout
+  page.setDefaultNavigationTimeout(0);
+
   // Navigate the page to a URL
-  await page.goto(url);
+  await page.goto(url, { waitUntil: "load" });
   await page.waitForNetworkIdle();
 
   // take screenshot
@@ -108,7 +111,7 @@ export const takeScreenshotOf = async (
   });
 
   // disconnect/close
-  // await page.close();
+  await page.close();
   // await browser.close();
   return `data:image/png;base64,${imageEncoding}`;
 };
@@ -121,7 +124,7 @@ export const getMintHypercertParams = async <
 ) => {
   // pass query to hypercert create form, then after loaded, take screenshot with base64encoding
   const hypercertCreateURL = getHypercertCreateURL(impact, VV_LOGO_URL);
-  console.log(`create-url: ${hypercertCreateURL}`);
+  // console.log(`create-url: ${hypercertCreateURL}`);
   const imageEncodingURL = await takeScreenshotOf(
     browserWSEndpoint,
     hypercertCreateURL,
@@ -129,7 +132,7 @@ export const getMintHypercertParams = async <
     PAGE_VIEWPORT,
     SCREENSHOT_CLIP
   );
-  console.log(`base64imageUrl: ${imageEncodingURL}`);
+  // console.log(`base64imageUrl: ${imageEncodingURL}`);
 
   // Validate and format your Hypercert metadata
   const {
@@ -181,7 +184,6 @@ export const getMintHypercertParams = async <
     excludedWorkScope: [],
     excludedRights: [],
   });
-  console.log(`metadata: ${metadata}`);
 
   // Check on errors
   if (!valid || !metadata) {
@@ -193,7 +195,7 @@ export const getMintHypercertParams = async <
   console.log(metadata);
 
   // Set the total amount of units available
-  const totalUnits: BigNumberish = 1_000;
+  const totalUnits: BigNumberish = 100_000;
 
   // Define the transfer restriction
 
@@ -221,7 +223,7 @@ export const generateHypercert = async <T extends ImpactStoryFormattedRowData>(
 ) => {
   // pass query to hypercert create form, then after loaded, take screenshot with base64encoding
   const hypercertCreateURL = getHypercertCreateURL(impact, VV_LOGO_URL);
-  console.log(`create-url: ${hypercertCreateURL}`);
+  // console.log(`create-url: ${hypercertCreateURL}`);
   // const imageEncodingURL = await takeScreenshotOf(
   //   browserWSEndpoint,
   //   hypercertCreateURL,
